@@ -145,6 +145,31 @@ server.post("/recommended-action", async (req, res) => {
   }
 });
 
+server.get("/work-orders", async (req, res) => {
+  const db = getDatabase();
+  const workOrdersRef = ref(db, `work-orders/`);
+
+  try {
+    const snapshot = await get(workOrdersRef);
+    res.json(snapshot.val());
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+server.get("/work-orders/:id", async (req, res) => {
+  const id = req.params.id;
+  const db = getDatabase();
+  const workOrdersRef = ref(db, `work-orders/${id}`);
+
+  try {
+    const snapshot = await get(workOrdersRef);
+    res.json(snapshot.val());
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
