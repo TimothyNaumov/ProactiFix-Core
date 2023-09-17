@@ -1,15 +1,17 @@
 import express from "express";
 import bodyParser from "body-parser";
 
-const host = 'localhost';
+const host = "localhost";
 const port = process.env.PORT || "8000";
+
+import * as admin from "firebase-admin";
 
 const app = express();
 
-app.set("port", port)
+app.set("port", port);
 
 app.use(function (req, res, next) {
-    bodyParser.JSON  
+  bodyParser.JSON;
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,35 +25,46 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 var db = getDatabase();
 
-const ref = db.ref
-
+const ref = db.ref;
 
 app.get("/", (req, res) => {
-    res.writeHead(200);
-    res.end("ProactiFix");
+  res.writeHead(200);
+  res.end("ProactiFix");
 });
 
 app.get("/appliances", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(appliances));
+  const db = firebase.getDatabase();
+  const ref = db.ref("appliances");
+
+  ref.on(
+    "value",
+    (snapshot) => {
+      console.log(snapshot.val());
+    },
+    (errorObject) => {
+      console.log("The read failed: " + errorObject.name);
+    }
+  );
+
+  //   res.setHeader("Content-Type", "application/json");
+  //   res.end(JSON.stringify(appliances));
 });
 
 app.get("/proactive", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(proactive));
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(proactive));
 });
 
 app.get("/reactive", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(reactive));
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(reactive));
 });
 
 app.get("/work_orders", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(work_orders));
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(work_orders));
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on http://${host}:${port}`);
+  console.log(`Server is running on http://${host}:${port}`);
 });
-
